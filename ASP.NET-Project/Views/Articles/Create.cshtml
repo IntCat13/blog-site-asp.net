@@ -1,0 +1,48 @@
+﻿@model ASP.NETProject.Models.Article//Ta linijka przypisuje do tego "View" model danych Article
+@{//Ta konstrukcja pozwana pisac C# kod w tym html dokumiencie
+    ViewData["Title"] = "Create";//Przypisujemy Create do naglowka strony
+}
+
+<h1>Create</h1>
+
+<h4>Article</h4>
+<hr />
+<div class="row box-2"><!-- W tym divie uzywam class bootstrapa ktory ustala go jako wiersz-->
+    <div class="mx-auto"><!-- Bootstrap class ktury automatycznie ustala automatyczne marginesy zeby wyrownac ten element-->
+        <form asp-action="Create" enctype="multipart/form-data"><!-- Tworzenie formularza po wykonaniu wykona polecenie "Create controllera "Articles" i za pomoca metody POST przepisze do metody dane z formularza-->
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div><!-- Tutaj ustalamy to, ze validacja bedzie zrobiona za posrednictviem atrybutow w modeli i ustalamy czerwony kolor dla wyswietlenia bledu validacji za pomoca bootstrapa -->
+            <div class="form-group"><!-- Uzywam botstrap class form-group dla ustalenia pozycji elementuw w formularze -->
+                <label asp-for="Title" class="control-label"></label><!-- Podpis nad polem pobierany z Titlu w modelu tej strony -->
+                <input asp-for="Title" class="form-control" /><!-- Input ktory zapisze w model formy element "Title" -->
+                <span asp-validation-for="Title" class="text-danger"></span><!-- Pole dla wyswietlenia wynikow validacji dla elementu "Ttitle" z modelu articles -->
+            </div>
+            <!-- Nastepne czescie formy sa podobne -->
+            <div class="form-group">
+                <label asp-for="Header" class="control-label"></label>
+                <textarea asp-for="Header" runat="server" class="form-control" rows="3"></textarea><!-- Zapiast jednego wirsza pobieramy tekst w textaream pozwalajacy na wormatowanie i bardziej latwy sposob zapisywania wielkiego tekstu -->
+                <span asp-validation-for="Header" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Content" class="control-label"></label>
+                <textarea asp-for="Content" runat="server" class="form-control" rows="10"></textarea><!-- Zapiast jednego wirsza pobieramy tekst w textaream pozwalajacy na wormatowanie i bardziej latwy sposob zapisywania wielkiego tekstu -->
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ImageFile" class="control-label"></label><br>
+                <input asp-for="ImageFile" accept="uploaded/*" />
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
+            </div><br>
+            <div class="form-group">
+                <input type="submit" value="Create new article" class="btn btn-primary" /><!-- Przyciskzatwierdza formularz -->
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a><!-- Link uruchomijacy polecenie "Index()" z controlera aricles-->
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}<!-- Podpinam renderowanie validacji jQuery do strony czyli inny dokument cshtml -->
+}

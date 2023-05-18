@@ -1,0 +1,63 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using ASP.NET_Project.Areas.Permissons
+@model IEnumerable<ASP.NETProject.Models.Article>
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+@if (SignInManager.IsSignedIn(User))
+{
+    @if(@User.IsHasPermissons())
+    {
+        <div>
+            <div class="card mb-4">
+                <div class="card-body">
+                    <a asp-action="Create" class="card-link"><button  type="submit" class="btn btn-info">
+                            Create new article
+                        </button></a>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@foreach (var item in Model.Reverse()) {
+
+<div>
+    <div class="card mb-4">
+      <img runat="server" src="@("uploaded/"+@item.ImagePath)" weight="100%" height="300px" style="object-fit: cover" alt=""/>
+      <div class="card-body">
+            <h5 class="card-title">@Html.DisplayFor(modelItem => item.Title)</h5>
+            <h6 class="card-subtitle text-muted">@Html.DisplayFor(modelItem => item.Header)</h6>
+      </div>
+
+      <div class="card-body">
+            <a asp-action="Details" asp-route-id="@item.Id" class="card-link"><button  type="submit" class="btn btn-info">
+                    See more
+            </button></a>
+                @if (@User.IsHasPermissons())
+                {
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="card-link"><button  type="submit" class="btn btn-info">
+                            Edit
+                        </button></a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="card-link"><button  type="submit" class="btn btn-info">
+                            Delete
+                        </button></a>
+                }
+            </div>
+
+      <div class="card-footer text-muted d-flex justify-content-between">
+            <div>
+                @Html.DisplayFor(modelItem => item.ReleaseDate)
+                <a href="">by @Html.DisplayFor(modelItem => item.CreatorId)</a>
+            </div>
+            <div><img runat="server" src="~/icons/eyeGrey.png" height="13px"/> @Html.DisplayFor(modelItem => item.Views)</div>
+      </div>
+    </div>
+</div>
+}

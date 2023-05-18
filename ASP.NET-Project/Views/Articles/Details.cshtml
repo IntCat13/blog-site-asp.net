@@ -1,0 +1,144 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using ASP.NET_Project.Areas.Permissons
+@model ASP.NETProject.Models.ArticleViewModel//Ustalam ArticleViewModel jako model tej strony, zawie odrazu dwie modeli dla wyswietlania postu oraz komentarzy
+
+@inject SignInManager<IdentityUser> SignInManager//Dolaczam skonfigurowany manager logowania
+@inject UserManager<IdentityUser> UserManager
+
+@{
+    ViewData["Title"] = "Details";//Ustalam naglowek strony
+}
+
+<!-- Wyswietlenie detali postu !-->
+<div class="d-flex justify-content-between"><!-- Uzywam bootstrap dla ustalenie rownych odstepow pomedzy elementuw !-->
+    <div>
+        <h1>@Html.DisplayFor(model => model.currentArticle.Title)</h1><!-- Za pomoca C# pobieram z modelu tytul posta !-->
+    </div>
+    <div>
+        <a asp-area="" asp-controller="Articles" asp-action="Index" class="card-link mb-1"><button  type="submit" class="btn btn-primary">
+            Back
+        </button></a><!-- Przycisk ktory wywoluje polecenie Index() z kontrolera "Articles"  czyli wraca na strone z postami !-->
+@if (@User.IsHasPermissons())//Sprawdzanie czy uzytkownik jest tworca blogu
+{
+    //Jezeli tak to pojawiaja sie przyciski Edit i Delete wysylajac model do polecen "Edit()" i "Delete()" z kontrolera "Article"
+        <a asp-action="Edit" asp-route-id="@Model?.currentArticle.Id" class="card-link"><button  type="submit" class="btn btn-primary">
+            Edit
+        </button></a>
+        <a asp-action="Delete" asp-route-id="@Model?.currentArticle.Id" class="card-link"><button  type="submit" class="btn btn-primary">
+            Delete
+        </button></a>
+}
+    </div>
+</div>
+
+<div class="border-bottom border-muted">
+    <div class="card mb-4">
+        <!-- Tworze tag img do wyswietlenia zdjecia a pomoca pliku uploaded i nawe pliku zaladowanego z Baze danych !-->
+      <img runat="server" src="@("../../uploaded/"+@Model?.currentArticle.ImagePath)" weight="100%" height="300px" style="object-fit: cover" alt=""/>
+      <div class="card-body">
+          <!-- Wyswietlam element "Header" z modeli "Article" !-->
+            <h6 class="card-title text-muted">@Model?.currentArticle.Header</h6>
+            
+
+            <!-- Wyswietlam element Content z modelu w tagie pre, ktory pozwalia zahowywac formatowanie tekstu !-->
+            <pre style="white-space:pre-wrap;">@Model.currentArticle.Content</pre>
+      </div>
+      <div class="card-footer text-muted d-flex justify-content-between">
+            <div>
+                @Model?.currentArticle.ReleaseDate
+                <a href="https://www.google.com/">by @Model?.currentArticle.CreatorId</a>
+            </div>
+            <div><img runat="server" src="~/icons/eyeGrey.png" height="13px"/> @Model?.currentArticle.Views</div>
+      </div>
+    </div>
+</div>
+
+@{
+    int commentsAmount = 0;
+    foreach(var comment in Model.comments)
+    {
+        commentsAmount++;
+    }
+}
+
+<h1>@("Comments: "+commentsAmount)</h1>
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <form asp-action="CreateComment">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label>Your comment</label>
+            <input asp-for="newComment.Content" class="form-control" value=""/>
+            <span asp-validation-for="newComment.Content" class="text-danger"></span>
+        </div>
+
+        <div class="form-group" style="display: none;">
+            <label asp-for="newComment.Id" class="control-label"></label>
+            <input asp-for="newComment.Id" class="form-control" value="@Model.currentArticle.Id"/>
+            <span asp-validation-for="newComment.ArticleID" class="text-danger"></span>
+        </div>
+
+        <div class="form-group p-3">
+            <input type="submit" value="Add comment" class="btn btn-primary" />
+        </div>
+    </form>
+}
+
+@{
+    if(commentsAmount == 0)
+    {
+        <h3>
+            There no comments
+        </h3>
+    }
+}
+@foreach (var item in Model.comments.Reverse()) {
+
+@if(@User.Identity?.Name == @item.AuthorName)
+{
+<div class="card border-success mb-3">
+              <div class="card-header text-muted d-flex justify-content-between">
+                <div>
+                    Commented 
+                    <a href="https://www.google.com/">by @item.AuthorName</a>
+                </div>
+                <div>
+                    <form method="POST" asp-action="DeleteComment">
+                       <input type="hidden" style="display: none;" value="@item.Id" name="id" class="btn-primary btn-sm"/>
+                       <input type="submit" class="d-inline btn btn-outline-danger btn-sm" value="Delete"/>
+                       <text class="d-inline">@item.ReleaseDate</text>
+                    </form>
+                </div>
+          </div>
+
+          <div class="card-body">
+                <h6 class="card-title">@item.Content</h6>
+          </div>
+</div>
+} else {
+<div class="card border-primary mb-3">
+    <div class="card-header text-muted d-flex justify-content-between">
+                <div>
+                    Commented 
+                    <a href="https://www.google.com/">by @item.AuthorName</a>
+                </div>
+                @if (@User.IsHasPermissons())
+                {
+                    <form method="POST" asp-action="DeleteComment">
+                       <input type="hidden" style="display: none;" value="@item.Id" name="id" class="btn-primary btn-sm"/>
+                       <input type="submit" class="d-inline btn btn-outline-danger btn-sm" value="Delete"/>
+                       <text class="d-inline">@item.ReleaseDate</text>
+                    </form>
+                } else {
+                    <div>@item.ReleaseDate</div>
+                }
+            </div>
+
+          <div class="card-body">
+                <h6 class="card-title">@item.Content</h6>
+          </div>
+</div>
+}
+}
+
