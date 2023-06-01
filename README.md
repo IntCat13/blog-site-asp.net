@@ -15,9 +15,9 @@ This site is an example of a simple blog, with all the functionality you need an
 ![image](Screenshots/Pages/DetailsAndComments.png)
 
 ## To do
-- Create a new permissions system
-- Dividing the functionality of controllers into modules
-- Separating parts of the views into external methods
+- [ ] Create a new permissions system
+- [x] Dividing the functionality of controllers into modules
+- [ ] Separating parts of the views into external methods
 
 # How to use it
 ## Running the application
